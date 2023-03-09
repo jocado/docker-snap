@@ -31,7 +31,7 @@ description: |
 license: (Apache-2.0 AND MIT AND GPL-2.0)
 grade: stable
 
-base: core18
+base: core22
 confinement: strict
 assumes: [snapd2.50]
 
@@ -88,7 +88,7 @@ slots:
 
 apps:
   docker:
-    command: docker
+    command: bin/docker
     completer: bin/docker-completion.sh
     plugs:
       - docker-cli
@@ -97,7 +97,7 @@ apps:
       - removable-media
 
   dockerd:
-    command: dockerd-wrapper
+    command: bin/dockerd-wrapper
     daemon: simple
     plugs:
       - firewall-control
@@ -112,20 +112,21 @@ apps:
       - docker-daemon
 
   compose:
-    command: docker-compose
+    command: bin/docker-compose
     plugs:
       - docker-cli
       - network
       - home
   machine:
-    command: docker-machine
+    command: bin/docker-machine
     plugs:
       - docker-cli
       - network
       - home
       - network-bind
   help:
-    command: help
+    command: bin/help
+
 
 parts:
   wrapper-scripts:
@@ -173,7 +174,7 @@ parts:
     # we get weird behavior if we mix/match Go versions throughout this one snapcraft.yml, so we use a YAML reference here to ensure we're always consistent throughout
     after: [wrapper-scripts]
     build-packages:
-      - btrfs-tools
+      - btrfs-progs
       - gcc
       - git
       - libc6-dev
@@ -183,7 +184,6 @@ parts:
       - patch
       - pkg-config
     stage-packages:
-      - aufs-tools
       - git
       - libltdl7
       - pigz
@@ -205,6 +205,7 @@ parts:
     go-channel: &gochannel '1.18/stable'
     build-packages:
       - make
+      - libbtrfs-dev
 
   runc:
     plugin: go
@@ -228,7 +229,8 @@ parts:
     source-tag: v1.12.0
     source-depth: 1
     override-build: |
-      PLATFORM_DIST="ubuntu18.04"
+      # No make target yet for ubuntu22.04
+      PLATFORM_DIST="ubuntu20.04"
 
       make ${PLATFORM_DIST}
 
@@ -249,7 +251,8 @@ parts:
     source-tag: v1.12.0
     source-depth: 1
     override-build: |
-      PLATFORM_DIST="ubuntu18.04"
+      # No make target yet for ubuntu22.04
+      PLATFORM_DIST="ubuntu20.04"
 
       make ${PLATFORM_DIST}
 
@@ -309,7 +312,7 @@ parts:
       export DISABLE_WARN_OUTSIDE_CONTAINER=1
 
       # setup the go build environment for docker-cli
-      . $SNAPCRAFT_STAGE/bin/go-build-helper.sh
+      . "$SNAPCRAFT_STAGE/bin/go-build-helper.sh"
       gopartbootstrap github.com/docker/cli
 
       # build the docker cli binary
@@ -320,6 +323,7 @@ parts:
       install -d "$SNAPCRAFT_PART_INSTALL/bin"
       install -T "$GOPATH/src/github.com/docker/cli/build/docker" "$SNAPCRAFT_PART_INSTALL/bin/docker"
       install -T "$GOPATH/src/github.com/docker/cli/contrib/completion/bash/docker" "$SNAPCRAFT_PART_INSTALL/bin/docker-completion.sh"
+    after: [wrapper-scripts]
     stage-packages:
       - git
 
@@ -360,7 +364,6 @@ parts:
   compose:
     plugin: python
     # https://github.com/docker/compose/blob/1.29.2/setup.py (Docker-supported Python versions)
-    python-version: python3
     source: https://github.com/docker/compose.git
     source-tag: 1.29.2
     source-depth: 1
