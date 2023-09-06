@@ -239,9 +239,11 @@ parts:
 
   nvidia-container-toolkit:
     plugin: go
-    source: https://github.com/NVIDIA/nvidia-container-toolkit.git
-    source-tag: v1.13.5
-    source-depth: 1
+    source: https://gitlab.com/nvidia/container-toolkit/container-toolkit.git
+    #source-tag: v1.13.5
+    #source-depth: 1
+    source-branch: library-search-path-cdi-generate
+    source-depth: 50
     override-pull: &arch-restrict |
       [ "${CRAFT_TARGET_ARCH}" != "amd64" ] && \
         [ "${CRAFT_TARGET_ARCH}" != "arm64" ] && \
@@ -262,9 +264,11 @@ parts:
 
   libnvidia-container:
     plugin: make
-    source: https://github.com/NVIDIA/libnvidia-container.git
-    source-tag: v1.13.5
-    source-depth: 1
+    source: https://gitlab.com/nvidia/container-toolkit/libnvidia-container.git
+    #source-tag: v1.13.5
+    #source-depth: 1
+    source-branch: main
+    source-depth: 50
     override-pull: *arch-restrict
     override-build: *arch-restrict
     override-stage: *arch-restrict
