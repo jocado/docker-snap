@@ -1,15 +1,11 @@
-From 93866d1908e963d73af829c37e1c99d12ae661eb Mon Sep 17 00:00:00 2001
-From: Stéphane Graber <stgraber@ubuntu.com>
-Date: Tue, 28 Feb 2023 01:16:25 +0000
-Subject: [PATCH] Fix for 22.04 build
+commit 6f7a17fa25436e30d13b0d5da0ff7c721fcbc0dc (HEAD -> 22.04-build)
+Author: Justin Cattle <j@ocado.com>
+Date:   Thu Aug 10 08:48:33 2023 +0100
 
-Signed-off-by: Stéphane Graber <stgraber@ubuntu.com>
----
- Makefile | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+    Fix for 22.04 build
 
 diff --git a/Makefile b/Makefile
-index 00d561e..8710bfd 100644
+index 36c43e57..885ccbe1 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,7 +18,7 @@
@@ -21,7 +17,7 @@ index 00d561e..8710bfd 100644
  WITH_TIRPC   ?= no
  WITH_SECCOMP ?= yes
  
-@@ -168,6 +168,9 @@ ifeq ($(WITH_TIRPC), yes)
+@@ -169,6 +169,9 @@ ifeq ($(WITH_TIRPC), yes)
  LIB_CPPFLAGS       += -isystem $(DEPS_DIR)$(includedir)/tirpc -DWITH_TIRPC
  LIB_LDLIBS_STATIC  += -l:libtirpc.a
  LIB_LDLIBS_SHARED  += -lpthread
@@ -31,6 +27,3 @@ index 00d561e..8710bfd 100644
  endif
  ifeq ($(WITH_SECCOMP), yes)
  LIB_CPPFLAGS       += -DWITH_SECCOMP $(shell pkg-config --cflags libseccomp)
--- 
-2.34.1
-
